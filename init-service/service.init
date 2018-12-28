@@ -1,0 +1,163 @@
+#!/bin/bash
+#
+#	$Id:$
+#	$Log:$
+#
+#	@author	Andrea Tassotti
+#
+#	This file should be linked to appropriate places in
+#	/etc/rc.* directory as described in each system's README file.
+#
+#	RedHat6/Centos6
+#
+# chkconfig: 5 90 90
+# description: ...
+#
+
+# RH Specific
+. /etc/init.d/functions
+
+DAEMON=/usr/local/bin/deamon-name
+PIDFILE=/var/run/daemon-name.pid
+RETVAL=0
+prog="daemon-name"
+
+
+
+function getpid()
+{
+	pid=
+	if [ -f ${PIDFILE} ];   then
+		pid="$( cat ${PIDFILE} )"
+		if ! ps -p $pid 2>dev/null; then pid=""; rm -f ${PIDFILE}; return 1; fi
+		return 0;
+	fi
+	return 1
+}
+
+
+#
+#
+#
+status()
+{
+	getpid
+	if [ -z "${pid}" ]
+	then
+		echo "$prog stopped";
+		RETVAL=2
+	else
+		echo "$prog (pid $pid) running ..."
+	fi
+}
+
+
+
+#
+#
+#
+start()
+{
+	echo -n $"starting $prog: "
+	L="Starting service"
+
+	getpid
+	if [ -z "$pid" ]
+	then
+		$DAEMON >/dev/null 2>&1 &
+		RETVAL=$?
+		if [ $RETVAL -eq 0 ];	 then
+			sleep 5
+			if getpid; then success $L; else failure $L; fi
+		else
+			failure $L
+			RETVAL=1
+		fi
+	else
+		failure $L
+		RETVAL=2
+	fi
+	echo
+	return $RETVAL
+}
+
+
+#
+#
+#
+stop()
+{
+	L="Stopping service"
+	echo -n $"Stopping $prog: "
+
+	getpid
+	if [ -n "$pid" ]; then
+	 	kill $pid
+		RETVAL=$?
+		sleep 2
+
+		if [ ! -f ${PIDFILE} ];	 then
+			success $L;
+		else
+			failure $L;
+			echo "$prog (pid $pid) running ..."
+		fi
+	else
+		if [ -f ${PIDFILE} ];	 then rm -f ${PIDFILE}; fi
+		failure $L;
+		RETVAL=1
+	fi
+
+	echo
+	return $RETVAL
+}
+
+
+#
+#
+#
+restart(){
+    stop
+    sleep 2
+    start
+}
+
+
+#
+#
+#
+reload(){
+    echo -n $"Configuration reloading: "	
+    killproc $prog -USR1
+    RETVAL=$?
+    echo
+    logger -t rmvcomm "Configuration reloaded"
+    return $RETVAL
+}
+
+
+
+# See how we were called.
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status
+	;;
+    restart)
+	restart
+	;;
+    reload)
+	reload
+	;;
+    *)
+	echo $"Usage: $0 {start|stop|status|restart|reload}"
+	RETVAL=1
+esac
+
+exit $RETVAL
+

@@ -1,0 +1,12 @@
+Package: packagename
+Version: 0.0.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: bash (>= 4.2), bc (>= 1.06.95-2)
+Suggests: package-doc
+Installed-Size: 0
+Maintainer: Andrea Tassotti <andrea.tassotti@gmail.com>
+Homepage: http://www.andrea-tassotti.it/
+Description: Descrizione
+ Completa

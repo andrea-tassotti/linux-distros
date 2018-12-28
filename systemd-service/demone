@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+#
+
+trap cleanup 1 2 3 5 15 
+
+function cleanup()
+{
+	exit 0
+}
+
+
+
+while true
+do
+	sleep 5
+	logger "Sono passati 5 secondi"
+done

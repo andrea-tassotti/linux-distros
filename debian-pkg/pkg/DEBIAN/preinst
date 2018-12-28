@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# @author Andrea Tassotti
+#
+set -e
+# $1: "upgrade"
+# $2: versione
+#echo esecuzione pre-installazione: argomenti: $@
+

@@ -1,0 +1,16 @@
+[Unit]
+Description=Daemon
+#After=getty.target
+
+[Service]
+#EnvironmentFile=/usr/local/etc/default/myservice
+ExecStart=/usr/local/bin/demone
+Restart=always
+#User=andrea
+#Group=andrea
+
+
+[Install]
+WantedBy=graphical.target
+WantedBy=multi-user.target
+
